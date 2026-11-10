@@ -1,0 +1,53 @@
+{
+  "threeVersion": "0.170.0",
+  "textureMaxDimension": 1024,
+  "models": {
+    "06": {
+      "file": "obj-06-kids-cycle.glb",
+      "source": "fbx.glb",
+      "object": "Kids Cycle",
+      "bytes": 1155872
+    },
+    "11": {
+      "file": "obj-11-autograph-book.glb",
+      "source": "leather_book.glb",
+      "bytes": 364684
+    },
+    "17": {
+      "file": "obj-17-cassette.glb",
+      "source": "boombox_dirty_low_poly.glb",
+      "object": "supplied boombox, not a standalone cassette",
+      "bytes": 1165776
+    },
+    "24": {
+      "file": "obj-24-key.glb",
+      "source": "rust_key.zip / key_low.fbx",
+      "bytes": 598404
+    },
+    "36": {
+      "file": "old-duck-toy.glb",
+      "source": "allduckchick.fbx",
+      "object": "confirmed aged duck toy",
+      "bytes": 55316
+    },
+    "52": {
+      "file": "obj-52-glasses.glb",
+      "source": "round_spectacles_4k.blend.zip",
+      "bytes": 566248
+    },
+    "68": {
+      "file": "obj-68-ring.glb",
+      "source": "fbx.zip / FBX/Ring1Lvl1.fbx",
+      "bytes": 8056
+    },
+    "83": {
+      "file": "obj-83-teacup.glb",
+      "source": "teacup_plate_mesh.fbx",
+      "endingOnly": true,
+      "bytes": 41728
+    }
+  },
+  "geometryCompression": "EXT_meshopt_compression",
+  "textureFormat": "image/webp",
+  "meshoptDecoderVersion": "0.22.0"
+}
