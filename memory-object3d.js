@@ -37,7 +37,7 @@
       renderer.domElement.hidden = true;
       document.querySelector('#space').append(renderer.domElement);
       backgroundRenderer=new THREE.WebGLRenderer({alpha:true,antialias:false,powerPreference:'low-power'});backgroundRenderer.setClearColor(0x000000,0);backgroundRenderer.outputColorSpace=THREE.SRGBColorSpace;backgroundRenderer.toneMapping=THREE.ACESFilmicToneMapping;backgroundRenderer.domElement.id='background-objects';backgroundRenderer.domElement.setAttribute('aria-hidden','true');backgroundRenderer.domElement.hidden=true;document.querySelector('#space').append(backgroundRenderer.domElement);
-      backgroundWorld=new THREE.Scene();backgroundRoot=new THREE.Group();backgroundWorld.add(backgroundRoot,new THREE.AmbientLight(0xcbd0d5,.05));backgroundSpot=new THREE.SpotLight(0xcbd0d5,.8,0,Math.PI/3,.9,0);backgroundWorld.add(backgroundSpot,backgroundSpot.target);
+      backgroundWorld=new THREE.Scene();backgroundRoot=new THREE.Group();backgroundWorld.add(backgroundRoot,new THREE.AmbientLight(0xcbd0d5,.16));backgroundSpot=new THREE.SpotLight(0xcbd0d5,1.3,0,Math.PI/3,.9,0);backgroundWorld.add(backgroundSpot,backgroundSpot.target);
       renderer.domElement.addEventListener('webglcontextlost', event => { event.preventDefault(); hide(); api.ready = false; });
       world = new THREE.Scene(); camera = new THREE.PerspectiveCamera(45, 1, 1, 5000); camera.position.z = 1100;
       world.add(new THREE.AmbientLight(0xcbd0d5, .16));
