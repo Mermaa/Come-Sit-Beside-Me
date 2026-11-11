@@ -236,10 +236,6 @@ p {
   color: #b0b8a3;
 }
 
-.eyebrow {
-  font-size: 11px;
-  letter-spacing: 2px;
-}
 
 label {
   display: block;
@@ -266,8 +262,8 @@ label {
 .ending-black .grain { opacity: 0; }
 .ending #menu, .ending #tools { opacity: 0; pointer-events: none; }
 #ending-invite { position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #000; }
-#ending-invite p { font: 18px/2 'Courier New', monospace; color: #b6b6a8; text-align: center; }
-#ending-leave { margin-top: 20px; font-size: 12px; border-bottom: 1px solid #595b50; }
+#ending-invite p { font: 20px/1.65 Georgia, serif; color: #b6b6a8; text-align: center; margin-inline: 20px; }
+#ending-invite button { margin: 20px 8px 0; font-size: 12px; }
 /* The panel lives outside the artwork and never exists in normal mode. */
 #debug-panel {
   position: fixed;
@@ -359,6 +355,5 @@ label {
 #visitor-silhouette { position: absolute; z-index: 2; pointer-events: none; transform-style: preserve-3d; }
 #visitor-silhouette[hidden] { display: none; }
 
-#ending-sit { position: fixed; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 14; white-space: nowrap; font-size: 14px; border-bottom: 1px solid #595b50; }
 
 #skip-to-tea { position: fixed; bottom: max(22px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 14; color: #d0cabd; white-space: nowrap; font-size: 13px; }

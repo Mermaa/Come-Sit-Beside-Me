@@ -4,7 +4,7 @@ A fictional web artwork about visiting a woman who lives with dementia. Darkness
 
 ## Run
 
-Run `python3 -m http.server 8081 --bind 127.0.0.1` in this directory, then open http://127.0.0.1:8081/. Keep the server running. `Start Afterglow.command` is the existing macOS launcher.
+Run `python3 -m http.server 8081 --bind 127.0.0.1` in this directory, then open http://127.0.0.1:8081/. Keep the server running. `Start Come Sit Beside Me.command` is the existing macOS launcher.
 
 ## Interaction
 
@@ -15,7 +15,7 @@ Run `python3 -m http.server 8081 --bind 127.0.0.1` in this directory, then open 
 - Desktop speech sits to one side; mobile speech sits below the object. No paper, age label, floating text echo or contact-shadow surfaces remain.
 - Existing sound remains off by default. No new sound functionality was added; obsolete paper rustle code was removed with the paper presentation.
 - Help and Sound are the only toolbar controls. Leave a memory appears only in the ending invitation. Visitor messages remain in localStorage on this device; they are not mixed into her eight fictional memories or shared online.
-- The existing ending starts after six different memories have fully spoken, or four minutes of exploration. Age 83 is reserved for the ending. After the teacup invitation, confirmed sitting or the Sit beside her button triggers “You’re here.” If no response arrives within 18 seconds, she says “The tea has gone cold.” Both paths lead to the leave-a-memory invitation.
+- The key approaches the visitor’s light first and introduces her first memory. The ending begins when she stops addressing the visitor, or after five minutes if the silhouette never appears. With working camera detection, sitting in view triggers “You’re here.” Without camera detection, holding the light on the teacup for eight seconds has the same effect. After 25 seconds she says “The tea has gone cold.” There is still time to respond before the scene fades to black.
 
 ## Confusion clock
 

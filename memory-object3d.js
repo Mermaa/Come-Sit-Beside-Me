@@ -54,7 +54,7 @@
     priority ? queue.unshift(age) : queue.push(age);
     pump();
   }
-  function preload() { for (const age of Object.keys(models)) enqueue(age); }
+  function preload(firstAge) { enqueue(firstAge); for (const age of Object.keys(models)) enqueue(age); }
   async function pump() {
     if (pumping) return; pumping = true;
     try {
