@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#090b0b">
-<title>Come Sit Beside Me</title><link rel="stylesheet" href="style.css?v=posture-1">
+<title>Come Sit Beside Me</title><link rel="stylesheet" href="style.css?v=sit-1">
 </head>
 <body>
 <section id="doorway" aria-labelledby="doorway-title">
@@ -21,10 +21,11 @@
 <button id="menu" aria-controls="tools" aria-expanded="false">Controls</button><footer id="tools"><div class="controls"><button id="about">Help</button><button id="sound" aria-pressed="false">Sound <span>Off</span></button></div></footer>
 <dialog id="info" aria-labelledby="info-title"><button class="close" aria-label="Close">×</button><div class="eyebrow">ABOUT COME SIT BESIDE ME</div><h2 id="info-title">You've come to visit her.</h2><p>She lives with dementia. Her memories drift, change and fade. Move your light slowly to find them.</p><p>This is an artistic interpretation, not a representation of every experience of dementia. The memories are fictional. If you use the camera, it stays on your device and nothing is recorded.</p><p>Explore with your pointer, touch, or arrow keys. Tab reveals the controls. The Controls button also opens them. Space pauses drifting; Esc closes this window. Sound is off by default.</p></dialog>
 <dialog id="write" aria-labelledby="write-title"><button class="close" aria-label="Close">×</button><div class="eyebrow">LEAVE A LITTLE LIGHT</div><h2 id="write-title">What would you keep?</h2><p>A small, ordinary moment is enough. Your words will stay on this device.</p><form id="memory-form"><label for="memory">A memory</label><textarea id="memory" maxlength="100" required placeholder="The kitchen smelled of toast that morning."></textarea><button class="submit" type="submit">Leave it in the light ↗</button></form></dialog>
+<button id="ending-sit" type="button" hidden>Sit beside her</button>
 <section id="ending-invite" hidden aria-label="Leave a little light"><p>Leave a little light<br>for the next person.</p><button id="ending-leave">Leave a memory</button></section>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
 <script src="memory-object3d.js?v=posture-1"></script>
 <script src="visitor-posture.js?v=posture-1"></script>
 <script src="visitor-silhouette.js?v=posture-1"></script>
-<script src="script.js?v=posture-1"></script>
+<script src="script.js?v=sit-1"></script>
 </body></html>

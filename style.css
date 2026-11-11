@@ -358,3 +358,5 @@ label {
 
 #visitor-silhouette { position: absolute; z-index: 2; pointer-events: none; transform-style: preserve-3d; }
 #visitor-silhouette[hidden] { display: none; }
+
+#ending-sit { position: fixed; bottom: max(32px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); z-index: 14; white-space: nowrap; font-size: 14px; border-bottom: 1px solid #595b50; }

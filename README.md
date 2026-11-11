@@ -15,7 +15,7 @@ Run `python3 -m http.server 8081 --bind 127.0.0.1` in this directory, then open 
 - Desktop speech sits to one side; mobile speech sits below the object. No paper, age label, floating text echo or contact-shadow surfaces remain.
 - Existing sound remains off by default. No new sound functionality was added; obsolete paper rustle code was removed with the paper presentation.
 - Help and Sound are the only toolbar controls. Leave a memory appears only in the ending invitation. Visitor messages remain in localStorage on this device; they are not mixed into her eight fictional memories or shared online.
-- The existing ending starts after six different memories have fully spoken, or four minutes of exploration. Age 83 is reserved for the ending. Posture is diagnostic only and does not affect ending outcomes.
+- The existing ending starts after six different memories have fully spoken, or four minutes of exploration. Age 83 is reserved for the ending. After the teacup invitation, confirmed sitting or the Sit beside her button triggers “You’re here.” If no response arrives within 18 seconds, she says “The tea has gone cold.” Both paths lead to the leave-a-memory invitation.
 
 ## Confusion clock
 
@@ -41,7 +41,7 @@ Official API reference: https://docs.ml5js.org/#/reference/body-segmentation (pl
 
 For each confident visible side, the score is `(kneeY - hipY) / distance(shoulder, hip)`. Valid sides are averaged. This ratio is unchanged by uniform image scaling and translation, so moving farther away alone does not classify sitting. Default threshold is 0.45, with a ±0.08 hysteresis band; a new candidate must remain for 1.5 seconds. Weak confidence, cropped knees, inconsistent sides and long sample gaps cancel confirmation. Lost tracking becomes unknown rather than sitting. The camera should include shoulders, hips and knees.
 
-The debug-only “模拟坐下” button feeds synthetic landmark coordinates through the same persistence test; its output is explicitly marked simulation. Press again to restore real-camera diagnostics. The threshold slider does not alter confusion. This stage makes **no changes to ending triggers or outcomes**.
+The debug-only “模拟坐下” button feeds synthetic landmark coordinates through the same persistence test; its output is explicitly marked simulation. Press again to restore real-camera diagnostics. The threshold slider does not alter confusion. A simulated sitting result can exercise the ending while debug mode is enabled.
 
 Official reference: https://docs.ml5js.org/#/reference/bodypose and https://github.com/ml5js/ml5-next-gen/blob/main/src/BodyPose/index.js.
 

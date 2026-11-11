@@ -185,10 +185,70 @@ $('#sound').onclick=async()=>{
 document.addEventListener('visibilitychange',()=>{if(!audio)return;gain.gain.setTargetAtTime(sound&&!document.hidden?.45:0,audio.currentTime,.12);updateSoundscape()});
 
 
-function endingPhase(stage){endingStage=stage;endingClock=0;document.body.classList.add('ending');if(stage==='arrival'){active=foreground=lastMemory;lastMemory.lucid=true;lastMemory.lucidUntil=Infinity;lastMemory.version=lastMemory.text;lastMemory.since=drift;lastMemory.speechPhase='waiting';lastMemory.chars=0;lastMemory.looked=true;prepareWords(lastMemory);lastMemory.mistakes.clear();}if(stage==='invitation'){$('#ending-invite').hidden=false;$('#ending-leave').focus();announce('Leave a little light for the next person.');}}
-function advanceEnding(dt,modal){if(!started||modal)return;if(endingStage==='explore'){if(readMemories.size>=6||time>=240)endingPending=true;const speaking=active&&['waiting','revealing','hold'].includes(active.speechPhase);if(endingPending&&!speaking){releaseMemory();endingPhase('gather');dwell=null;}return;}endingClock+=dt;const duration={gather:25,arrival:6,hold:7,fade:10,black:3};if(endingClock>=duration[endingStage])endingPhase({gather:'arrival',arrival:'hold',hold:'fade',fade:'black',black:'invitation'}[endingStage]);}
-function renderEnding(dt){const phase=endingStage,black=['black','invitation'].includes(phase),arrival=phase==='arrival'?clamp(endingClock/6,0,1):1,fade=phase==='fade'?clamp(endingClock/10,0,1):0,f=lastMemory;clarityMix=black?0:arrival*(1-fade);document.body.classList.toggle('clarity',clarityMix>.5);document.body.classList.remove('confused');f.lift=arrival;f.z=phase==='fade'?-600*fade:-500*(1-arrival);const reference=Math.min(300,w*.64)*(1100/(1100-f.z)),shape=window.MemoryObject3D?.measure('83',reference)||{width:0,height:0},x=clamp(light.x,shape.width/2+35,w-shape.width/2-35),y=clamp(light.y,shape.height/2+80,Math.max(shape.height/2+80,h-(w<=700?230:100)-shape.height/2));f.frame={id:'83',age:'83',x,y,z:f.z,reference,foreground:true,since:f.since};f.rect={left:x-shape.width/2,right:x+shape.width/2,top:y-shape.height/2,bottom:y+shape.height/2,width:shape.width,height:shape.height};f.looked=!black;f.lucid=phase!=='fade';document.body.classList.toggle('ending-black',black);if(phase==='fade'){f.speechPhase='hold';f.chars=fade<.75?Math.ceil(f.text.length-(f.text.length-12)*fade/.75):12;showWords(f);speech.hidden=false;speech.classList.toggle('dispersing',fade>.75);speechPosition(f);}else updateSpeech(f,dt,true);if(black)speech.hidden=true;lightVeil(black?0:260*(1-fade),light.x,light.y,clarityMix,0,black);draw(black?[]:[f.frame],0,1-fade);}
+const sitButton = $('#ending-sit');
+const sitWait = 18;
+sitButton.onclick = () => {
+  if (endingStage === 'sit') endingPhase('response', true);
+};
+function endingWords(words) {
+  const f = lastMemory;
+  f.version = words;
+  f.speechPhase = 'waiting';
+  f.chars = 0;
+  f.looked = true;
+  prepareWords(f);
+  f.mistakes.clear();
+}
+function endingPhase(stage, sat = false) {
+  endingStage = stage;
+  endingClock = 0;
+  document.body.classList.add('ending');
+  sitButton.hidden = stage !== 'sit';
+  if (stage === 'arrival') {
+    active = foreground = lastMemory;
+    lastMemory.lucid = true;
+    lastMemory.lucidUntil = Infinity;
+    lastMemory.since = drift;
+    endingWords(lastMemory.text.split('\n')[1]);
+  }
+  if (stage === 'response') endingWords(sat ? lastMemory.text.split('\n')[0] : 'The tea has gone cold.');
+  if (stage === 'invitation') {
+    $('#ending-invite').hidden = false;
+    $('#ending-leave').focus();
+    announce('Leave a little light for the next person.');
+  }
+}
+function advanceEnding(dt, modal) {
+  if (!started || modal) return;
+  if (endingStage === 'explore') {
+    if (readMemories.size >= 6 || time >= 240) endingPending = true;
+    const speaking = active && ['waiting','revealing','hold'].includes(active.speechPhase);
+    if (endingPending && !speaking) {
+      releaseMemory();
+      endingPhase('gather');
+      dwell = null;
+    }
+    return;
+  }
+  endingClock += dt;
+  if (endingStage === 'arrival') {
+    if (endingClock >= 6 && lastMemory.speechPhase === 'hold') endingPhase('sit');
+    return;
+  }
+  if (endingStage === 'sit') {
+    const pose = window.VisitorPosture?.status();
+    if (pose?.posture === 'sitting' && (pose.mode === 'camera' || (debugEnabled && pose.mode === 'simulation'))) {
+      endingPhase('response', true);
+    } else if (endingClock >= sitWait) {
+      endingPhase('response');
+    }
+    return;
+  }
+  const next = {gather:[25,'arrival'], response:[7,'fade'], fade:[10,'black'], black:[3,'invitation']}[endingStage];
+  if (next && endingClock >= next[0]) endingPhase(next[1]);
+}
+function renderEnding(dt){const phase=endingStage,black=['black','invitation'].includes(phase),arrival=phase==='arrival'?clamp(endingClock/6,0,1):1,fade=phase==='fade'?clamp(endingClock/10,0,1):0,f=lastMemory;clarityMix=black?0:arrival*(1-fade);document.body.classList.toggle('clarity',clarityMix>.5);document.body.classList.remove('confused');f.lift=arrival;f.z=phase==='fade'?-600*fade:-500*(1-arrival);const reference=Math.min(300,w*.64)*(1100/(1100-f.z)),shape=window.MemoryObject3D?.measure('83',reference)||{width:0,height:0},x=clamp(light.x,shape.width/2+35,w-shape.width/2-35),y=clamp(light.y,shape.height/2+80,Math.max(shape.height/2+80,h-(w<=700?230:100)-shape.height/2));f.frame={id:'83',age:'83',x,y,z:f.z,reference,foreground:true,since:f.since};f.rect={left:x-shape.width/2,right:x+shape.width/2,top:y-shape.height/2,bottom:y+shape.height/2,width:shape.width,height:shape.height};f.looked=!black;f.lucid=phase!=='fade';document.body.classList.toggle('ending-black',black);if(phase==='fade'){f.speechPhase='hold';f.chars=fade<.75?Math.ceil(f.version.length*(1-fade/.75)):0;showWords(f);speech.hidden=false;speech.classList.toggle('dispersing',fade>.75);speechPosition(f);}else updateSpeech(f,dt,true);if(black)speech.hidden=true;lightVeil(black?0:260*(1-fade),light.x,light.y,clarityMix,0,black);draw(black?[]:[f.frame],0,1-fade);}
 let debugPanel=null;
-function updateDebugPanel(){if(!debugPanel)return;const phases={gather:'收拢',arrival:'最后一件物品',hold:'停留',fade:'褪去',black:'黑暗',invitation:'邀请'};debugPanel.querySelector('[data-debug-state]').textContent=!entered?'门口':endingStage!=='explore'?'结尾 · '+phases[endingStage]:active?.lucid||visitor.lucid?'清醒':'混乱';const status=window.MemoryObject3D?.status();debugPanel.querySelector('[data-debug-models]').textContent=status?`模型 ${status.loaded}/8 · 当前 ${status.active||'—'} · 加载 ${status.loading||'—'} · 失败 ${status.failed.join(',')||'无'} · 背景 ${status.background}`:'';const body=window.VisitorSilhouette?.status();debugPanel.querySelector('[data-debug-body]').textContent=body?.mode==='camera'?(body.detected?'检测到人':'未检测到人'):body?.loading?'模型加载中':body?.mode==='unavailable'?'摄像头或分割不可用 · 通用轮廓':'未使用摄像头 · 通用轮廓';debugPanel.querySelector('[data-debug-visitor-stage]').textContent=visitor.stage;const pose=window.VisitorPosture?.status(),namesPose={standing:'站着',sitting:'坐着',unknown:'未知'};debugPanel.querySelector('[data-posture-state]').textContent=(pose?.mode==='simulation'?'模拟 · ':'')+(namesPose[pose?.posture]||'未知')+(pose?.candidate?' · 正在确认 '+(namesPose[pose.candidate])+' '+Math.round(pose.pending*100)+'%':'');const m=pose?.metrics;debugPanel.querySelector('[data-posture-values]').textContent=m?`髋 Y ${m.hip.toFixed(1)}px · 膝 Y ${m.knee.toFixed(1)}px · 比值 ${m.ratio.toFixed(2)} · 置信度 ${m.confidence.toFixed(2)}`:'髋 Y — · 膝 Y — · 比值 —';debugPanel.querySelector('[data-posture-reason]').textContent=pose?.reason||'未启用摄像头';debugPanel.querySelector('[data-posture-threshold-value]').textContent=(pose?.threshold??.45).toFixed(2);debugPanel.querySelector('[data-posture-simulate]').textContent=pose?.mode==='simulation'?'结束模拟':'模拟坐下';const level=confusion;debugPanel.querySelector('output[for="debug-chaos"]').textContent=level.toFixed(2);debugPanel.querySelector('#debug-chaos').value=level;const errors=active?.errors||{},names=Object.entries(errors).filter(([,on])=>on).map(([kind])=>ERROR_NAMES[kind]+(kind==='morph'?' '+active.age+'→'+active.errorTarget[0]:''));debugPanel.querySelector('[data-debug-errors]').textContent=(active?.lucid?'清醒覆盖 · ':'')+(names.join(' / ')||'暂无出错');}
+function updateDebugPanel(){if(!debugPanel)return;const phases={gather:'收拢',arrival:'最后一件物品',sit:'等待坐下',response:'她的回应',fade:'褪去',black:'黑暗',invitation:'邀请'};debugPanel.querySelector('[data-debug-state]').textContent=!entered?'门口':endingStage!=='explore'?'结尾 · '+phases[endingStage]:active?.lucid||visitor.lucid?'清醒':'混乱';const status=window.MemoryObject3D?.status();debugPanel.querySelector('[data-debug-models]').textContent=status?`模型 ${status.loaded}/8 · 当前 ${status.active||'—'} · 加载 ${status.loading||'—'} · 失败 ${status.failed.join(',')||'无'} · 背景 ${status.background}`:'';const body=window.VisitorSilhouette?.status();debugPanel.querySelector('[data-debug-body]').textContent=body?.mode==='camera'?(body.detected?'检测到人':'未检测到人'):body?.loading?'模型加载中':body?.mode==='unavailable'?'摄像头或分割不可用 · 通用轮廓':'未使用摄像头 · 通用轮廓';debugPanel.querySelector('[data-debug-visitor-stage]').textContent=visitor.stage;const pose=window.VisitorPosture?.status(),namesPose={standing:'站着',sitting:'坐着',unknown:'未知'};debugPanel.querySelector('[data-posture-state]').textContent=(pose?.mode==='simulation'?'模拟 · ':'')+(namesPose[pose?.posture]||'未知')+(pose?.candidate?' · 正在确认 '+(namesPose[pose.candidate])+' '+Math.round(pose.pending*100)+'%':'');const m=pose?.metrics;debugPanel.querySelector('[data-posture-values]').textContent=m?`髋 Y ${m.hip.toFixed(1)}px · 膝 Y ${m.knee.toFixed(1)}px · 比值 ${m.ratio.toFixed(2)} · 置信度 ${m.confidence.toFixed(2)}`:'髋 Y — · 膝 Y — · 比值 —';debugPanel.querySelector('[data-posture-reason]').textContent=pose?.reason||'未启用摄像头';debugPanel.querySelector('[data-posture-threshold-value]').textContent=(pose?.threshold??.45).toFixed(2);debugPanel.querySelector('[data-posture-simulate]').textContent=pose?.mode==='simulation'?'结束模拟':'模拟坐下';const level=confusion;debugPanel.querySelector('output[for="debug-chaos"]').textContent=level.toFixed(2);debugPanel.querySelector('#debug-chaos').value=level;const errors=active?.errors||{},names=Object.entries(errors).filter(([,on])=>on).map(([kind])=>ERROR_NAMES[kind]+(kind==='morph'?' '+active.age+'→'+active.errorTarget[0]:''));debugPanel.querySelector('[data-debug-errors]').textContent=(active?.lucid?'清醒覆盖 · ':'')+(names.join(' / ')||'暂无出错');}
 function debugClarity(){if(!entered||endingStage!=='explore')return;begin();if(visitor.hover&&!active){visitor.lucid=true;visitor.lucidUntil=time+30;previousClarity=false;nextLucid=time+40;return;}if(!active)select(memories.find(f=>f.age===debugPanel.querySelector('[data-debug-age]').value)||memories[0]);active.lucid=true;active.lucidUntil=time+30;active.version=active.text;active.chars=0;active.speechPhase='waiting';prepareWords(active);previousClarity=false;nextLucid=time+40;updateDebugPanel();}
 if(debugEnabled){debugPanel=document.createElement('aside');debugPanel.id='debug-panel';debugPanel.lang='zh-CN';debugPanel.setAttribute('aria-label','调试面板');debugPanel.innerHTML=`<strong>Debug</strong><div>当前状态：<span data-debug-state>混乱</span></div><label for="debug-chaos">混乱程度 <output for="debug-chaos">0.00</output></label><input id="debug-chaos" type="range" min="0" max="1" step="0.01" value="0"><div>当前出错：<span data-debug-errors>暂无出错</span></div><label>强制出错 <select data-debug-error aria-label="强制出错方式"><option value="auto">自动（按概率）</option><option value="language">话说不完整</option><option value="dissolve">物件不完整</option><option value="era">年代错位</option><option value="mismatch">认错东西</option><option value="morph">物件变成另一样</option></select></label><div class="debug-actions"><button type="button" data-debug-clarity>触发清醒</button><button type="button" data-debug-ending>触发结尾</button><label>物件 <select data-debug-age aria-label="物件年龄"><option>06</option><option>11</option><option>17</option><option>24</option><option>36</option><option>52</option><option>68</option></select></label><button type="button" data-debug-object>查看物件</button><div data-debug-models></div><button type="button" data-debug-reset>重置到开场</button></div><div>身体检测：<span data-debug-body></span></div><div>她对访客：<span data-debug-visitor-stage></span></div><button type="button" data-debug-visitor>立即显示身影</button><hr><div>站坐检测：<span data-posture-state>未知</span></div><div data-posture-values></div><div data-posture-reason></div><label for="posture-threshold">坐姿阈值 <output data-posture-threshold-value>0.45</output></label><input id="posture-threshold" type="range" min="0.15" max="0.85" step="0.01" value="0.45"><small>比值 =（膝 Y − 髋 Y）/ 躯干长度。越小越接近坐姿。</small><button type="button" data-posture-simulate>模拟坐下</button>`;document.body.append(debugPanel);debugPanel.querySelector('#posture-threshold').oninput=e=>window.VisitorPosture?.setThreshold(e.target.value);debugPanel.querySelector('[data-posture-simulate]').onclick=()=>{window.VisitorPosture?.simulateSit();updateDebugPanel();};debugPanel.querySelector('#debug-chaos').oninput=e=>{confusion=clamp(Number(e.target.value),0,1);confusionManual=true;updateDebugPanel()};debugPanel.querySelector('[data-debug-error]').onchange=e=>{forcedError=e.target.value;if(!entered||endingStage!=='explore')return;begin();if(!active){const f=memories.find(f=>f.age===debugPanel.querySelector('[data-debug-age]').value);pointer.x=light.x=w/2;pointer.y=light.y=h*(w<=700?.35:.5);select(f);}active.lucid=false;previousClarity=false;nextLucid=time+25;active.morphProgress=0;updateErrors(active,.05);updateDebugPanel();};debugPanel.querySelector('[data-debug-clarity]').onclick=debugClarity;debugPanel.querySelector('[data-debug-ending]').onclick=()=>{if(!entered||endingStage!=='explore')return;document.querySelectorAll('dialog[open]').forEach(d=>d.close());begin();releaseMemory();endingPending=false;endingPhase('gather');};debugPanel.querySelector('[data-debug-object]').onclick=()=>{if(!entered||endingStage!=='explore')return;begin();const f=memories.find(f=>f.age===debugPanel.querySelector('[data-debug-age]').value);pointer.x=light.x=w/2;pointer.y=light.y=h*(w<=700?.35:.5);select(f);f.lucid=false;nextLucid=time+25;};debugPanel.querySelector('[data-debug-visitor]').onclick=()=>{if(!entered||endingStage!=='explore')return;begin();releaseMemory();showVisitor({x:w*.35,y:h*.4});visitor.x=w/2;visitor.y=h*.4;pointer.x=light.x=visitor.x;pointer.y=light.y=visitor.y;};debugPanel.querySelector('[data-debug-reset]').onclick=()=>location.reload();updateDebugPanel();}
