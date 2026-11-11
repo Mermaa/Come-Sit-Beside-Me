@@ -48,6 +48,7 @@ function position(){let best,bestGap=-1;for(let i=0;i<40;i++){const p={x:.12+Mat
 function memory([age,text]){return{age,text,version:text,...position(),baseZ:-360-Math.random()*240,z:-500,lift:0,seen:0,phase:Math.random()*10,rate:.012+Math.random()*.012,speechPhase:'waiting',chars:0,textExposure:0,looked:false,since:0,clock:0,lucid:false,lucidUntil:0,rect:null,frame:null};}
 const memories=source.slice(0,-1).map(memory),lastMemory=memory(source[7]);
 let openingMemoryShown=false;
+let openingMemory=null;
 let endingStage='explore',endingClock=0,endingPending=false,dwell=null,dwellSince=0;
 let gyroAsked=false,gyroEnabled=false,gyroX=0,gyroY=0,gyroOrigin=null;
 async function requestGyro(){if(gyroAsked||reduced||!touchDevice)return;gyroAsked=true;try{if(typeof DeviceOrientationEvent==='undefined')return;if(typeof DeviceOrientationEvent.requestPermission==='function'&&await DeviceOrientationEvent.requestPermission()!=='granted')return;addEventListener('deviceorientation',e=>{if(!Number.isFinite(e.beta)||!Number.isFinite(e.gamma))return;if(!gyroOrigin)gyroOrigin={beta:e.beta,gamma:e.gamma};gyroX=clamp((e.beta-gyroOrigin.beta)*.16,-5,5);gyroY=clamp((e.gamma-gyroOrigin.gamma)*.16,-5,5);gyroEnabled=true})}catch{gyroEnabled=false}}
@@ -141,14 +142,25 @@ if (!openingMemoryShown && !modal && endingStage === 'explore' && now >= explora
   openingMemoryShown = true;
   if (!active && !foreground) {
     begin();
-    select(memories[0]);
+    openingMemory = memories[0];
+    light.x = w / 2;
+    light.y = h * .42;
+    select(openingMemory);
   }
 }
 const start=Math.floor(time/40)%memories.length,visible=Array.from({length:4},(_,i)=>memories[(start+i)%memories.length]);if(active&&!visible.includes(active))visible[3]=active;if(foreground&&!visible.includes(foreground))visible[3]=foreground;
 if(active)updateErrors(active,tick);
 document.body.style.setProperty('--grain-opacity',.025+.055*confusion);
 if(!visitor.shown&&darknessTime>=90&&!visible.some(f=>f.age==='36'))visible[2]=memories.find(f=>f.age==='36');
-const items=visible.map(f=>frameObject(f,f===active,tick));if(!visitor.shown&&darknessTime>=90&&active&&active.age!=='36'&&['done','dispersing'].includes(active.speechPhase))releaseMemory();if(active){const arrival=active.lift<.9&&Math.hypot(pointer.x-active.focus.x,pointer.y-active.focus.y)<85;active.looked=near(active,22)||arrival;if(!active.looked){releaseMemory();dwell=null;}}if(!active&&endingStage==='explore'&&started&&!modal){const candidate=visible.filter(f=>near(f,18)&&f!==foreground&&window.MemoryObject3D?.isReady(f.age)).sort((a,b)=>b.z-a.z)[0];if(candidate&&dwell===candidate){if(time-dwellSince>=.5&&(!foreground||foreground.lift<.08))select(candidate);}else{dwell=candidate||null;dwellSince=time;}}if(foreground&&foreground!==active&&foreground.lift<.02){foreground=null;speech.hidden=true;}updateSpeech(foreground,tick);if(visitor.shown&&active?.age==='36'&&active.speechPhase==='dispersing')releaseMemory();updateVisitor(tick);document.body.classList.toggle('clarity',clear);document.body.classList.toggle('confused',!clear);document.body.classList.toggle('edge',started&&(pointer.y<75||pointer.y>h-100));
+// Keep the first object illuminated until its line has been readable.
+if (openingMemory && (active !== openingMemory || ['dispersing','done'].includes(openingMemory.speechPhase))) {
+  openingMemory = null;
+}
+if (openingMemory) {
+  light.x = openingMemory.focus.x = w / 2;
+  light.y = openingMemory.focus.y = h * .42;
+}
+const items=visible.map(f=>frameObject(f,f===active,tick));if(!visitor.shown&&darknessTime>=90&&active&&active.age!=='36'&&['done','dispersing'].includes(active.speechPhase))releaseMemory();if(active){const arrival=active.lift<.9&&Math.hypot(pointer.x-active.focus.x,pointer.y-active.focus.y)<85;active.looked=active===openingMemory||near(active,22)||arrival;if(!active.looked){releaseMemory();dwell=null;}}if(!active&&endingStage==='explore'&&started&&!modal){const candidate=visible.filter(f=>near(f,w<=700?38:52)&&f!==foreground&&window.MemoryObject3D?.isReady(f.age)).sort((a,b)=>b.z-a.z)[0];if(candidate&&dwell===candidate){if(time-dwellSince>=.5&&(!foreground||foreground.lift<.08))select(candidate);}else{dwell=candidate||null;dwellSince=time;}}if(foreground&&foreground!==active&&foreground.lift<.02){foreground=null;speech.hidden=true;}updateSpeech(foreground,tick);if(visitor.shown&&active?.age==='36'&&active.speechPhase==='dispersing')releaseMemory();updateVisitor(tick);document.body.classList.toggle('clarity',clear);document.body.classList.toggle('confused',!clear);document.body.classList.toggle('edge',started&&(pointer.y<75||pointer.y>h-100));
 const gather=endingStage==='gather'?clamp(endingClock/25,0,1):0,radius=((240-85*confusion)*(1-clarityMix)+Math.min(450,w*.95)*clarityMix)*(1-.4*gather);lightVeil(radius,light.x,light.y,clarityMix,blink,!started);draw(items.slice(0,Math.max(0,4-Math.floor(gather*4))),1-gather);updateSoundscape();updateDebugPanel();requestAnimationFrame(frame);}
 requestAnimationFrame(frame);
 // Procedural soundscape: created only after the visitor enables Sound.

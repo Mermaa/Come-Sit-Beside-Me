@@ -212,7 +212,7 @@
     renderer.domElement.style.opacity=state.exposure??1;renderer.domElement.style.setProperty('--object-focus',`${state.reduced?.3:.3+2*(1-(state.focus??1))}px`);
     if(subject.children.length){renderer.render(world,camera);renders++;}else renderer.clear();
     backgroundRenderer.domElement.hidden=!backgroundRoot.children.length;
-    backgroundRenderer.domElement.style.opacity=(state.backgroundExposure??1)*(1-state.clarity*.98)*.4;
+    backgroundRenderer.domElement.style.opacity=(state.backgroundExposure??1)*(1-state.clarity*.98)*.78;
     const backgroundKey=state.items.map(f=>f.foreground?`${f.effect?.eraTarget||''}:${Math.round((f.effect?.strength||0)*20)}`:f.age).join(',');
     if(backgroundRoot.children.length&&(state.motionTime-lastBackgroundDraw>.065||Math.hypot(state.light.x-lastBackgroundLight.x,state.light.y-lastBackgroundLight.y)>1||backgroundKey!==lastBackgroundKey)){backgroundRenderer.render(backgroundWorld,camera);lastBackgroundDraw=state.motionTime;lastBackgroundLight={...state.light};lastBackgroundKey=backgroundKey;}else if(!backgroundRoot.children.length)backgroundRenderer.clear();
     visible=true;
